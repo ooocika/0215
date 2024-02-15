@@ -1,0 +1,1024 @@
+public interface TextFormatter{
+
+  public void format(String text);
+}
+//
+public class CapTextFormatter implements TextFormatter{
+
+  @Override
+  public void format (String text){
+  System.out.println("[CapTextFormatter] : "+text.toUpperCase());
+  }
+}
+//
+public class LowerTextFormatter implements TextFormatter{
+
+  @Override
+  public void format(String text){
+     System.out.println("[LowerTextFormatter] : "+text.toLowerCase()]");
+  }
+}
+//
+public class TextEditor{
+
+  private final TextFormatter textFormatter;
+
+  public TextEditor(TextFormatter textFormatter){
+    this.textFormatter = textFormatter;
+  }
+  public void publishText(String text){
+    textFormatter.format(text);
+  }
+}
+//
+public class TestStrategyPattern{
+
+  public void main(String[] args){
+    TextFormatter formatter = new CapTextFormatter();
+    TextEditor editor = new TextEditor(formatter);
+    editor.publishText("Testing text in caps formatter");
+
+    formatter = new LowerTextFormatter();
+    editor = new TextEditor(formatter);
+    editor.publishText("Testing text in lower formatter");
+  }
+}
+//
+
+public interface job{
+
+  public void run();
+}
+
+//
+public class Email{
+  public void sendEmail(){
+     System.out.println("Sending email...");
+  }
+}
+///
+public class FileIO{
+  public void execute(){
+     System.out.println("Executing File IO operations..")
+  }
+}
+//
+public class Logging{
+
+  public void log(){
+     System.out.printlnb("Logging...");
+  }
+}
+
+//
+public class Sms{
+  public void sendSms(){
+     System.out.println("Sending SMS...");
+  }
+}
+//
+public class EmailJob implements Job{
+
+  private Email email;
+
+  public void setEmail (Email email){
+    this.email = email;
+  }
+  @Override
+  public void run(){
+     System.out.println("Jon ID : "+Thread.currentThread().getId()+"executing
+                        email jobs");
+    if(email != null){
+      email.sendEmail();
+      
+    }
+    try{
+      Thread.sleep(1000);
+    }
+    catch(InteruptedException e)
+      {
+        Thread.currentThread().interrupt();
+      }
+  }
+}
+
+//
+public class FileIOJob implements Job{
+
+  private FileIO fileIO;
+
+  public void setFileIO(FileIO fileIO){
+    this.fileIO = fileIO;
+    
+  }
+
+  @Override
+  public void run(){
+     System.out.println("Job ID : "+Thread.currentThread().getId()+"executing file IO jobs");
+  if(fileIO != null){
+
+    fileIO.execute();
+  }
+    try{
+      Thread.sleep(1000);
+    }
+    catch(InterrupedException e){
+
+      Thread.currentThread().interrupt();
+    }
+  }
+}
+//
+public class LoggingJob implements Job{
+
+  private Logging logging;
+
+  public void setLogging(Logging logging){
+    this.logging = logging;
+  }
+
+  @Override
+  public void run({
+   System.out.println(Job ID : "+Thread.currentThread().getId()+"executing logging jobs");
+
+
+    if(logging != null){
+      logging.log();
+    }
+      try{
+        Thread.sleep(1000);
+      }
+        catch(InterruptedExeption e){
+          Thread.currentThread().interrupt();
+        }
+  }
+}
+//
+public class SmsJob implement Job{
+
+  private Sms sms;
+  public void setSms(Sms sms){
+    this.sms = sms;
+  }
+
+@Override
+  public void run(){
+   System.out.println("Job ID : "+Thread.currentThread().getId()+"executing SMS jobs");
+  
+
+if(sms != null){
+  sms.sendSms();
+}
+  try{
+    Thread.sleep(1000);
+  }
+  catch(InterruptedException e)){
+    Thread.currentThread().interrupt();
+  }
+}
+}
+//
+public class ThreadPool{
+
+  private final BlockingQueue<Job> jobQueue;
+  private final Thread[] jobThreads;
+  private volatile boolean shutdown;
+
+  public ThreadPool(int n){
+
+    jobQueue = new LinkedBlockingQueue<>();
+  jobThreads = new Thread[n];
+
+    for(int i =0; i<n; i++){
+      jobThreads[i] = new Thread("Pool Thread " + i);
+      jobThreads[i].start();
+    
+    }
+  }
+  public void addJob(Job r){
+    try{
+      JobQueue.put(r);
+    }catch(InterruptedException e){
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  public void shutdownpool()
+
+  {
+    while(!jobQueue.isEmpty()){
+      try{
+        Thread.sleep(1000);
+        
+      }catch(InterruptedException e){
+        e.printStackTrace();
+      }
+    }
+    shutdown = true;
+    for(Thread thread : jobThreads){
+      workerThread.interrupt();
+    }
+  }
+  private class Worker extends Thread
+    {
+      public Worker(String name){
+        super(name);
+      }
+      public void run(){
+        while(!shutdown){
+          try{
+            Job r = JobQueue.take();
+            r.run();
+          }catch(InterruptedException e){
+        }
+      }
+    }
+  }
+}
+//
+public class TestCommandPattern{
+  public static void main (String[] args){
+    init();
+  }
+  private static void init(){
+    ThreadPool pool = new ThreadPool(10);
+
+    Email email = null;
+    EmailJob emailJob = new EmailJob();
+
+    Sms sms = null;
+    SmsJob smsJob = new SmsJob();
+
+    FileIO fileIO = null;
+    FileIOJob fileIOJob = new FileIOJob();
+
+    Logging logging = null;
+    LoggingJob loggingJob = new LoggingJob();
+
+    for(int i=0; i<5; i++){
+      email = new Email();
+      emailJob.setEmail(email);
+
+      sms = new Sms();
+      smsJob.setSms(sms);
+
+      fileIO = new FileIO();
+      fileIOJob.setFileIO(fileIO);
+
+      logging = new Logging();
+      logJob.setLogging(logging);
+
+
+      pool.add(emailJob);
+      pool.add(smsJob);
+      pool.add(fileIOJob);
+      pool.add(logJob);
+    }
+    pool.shutdownPool();
+  }
+}
+//
+public interface Expression{
+  public int interpret();
+}
+//
+public class Add implements Expression{
+  private final Expression leftExpression;
+  private final Expression rightExpression;
+
+
+  public Add(Expression leftExpression, Expression rightExpression){
+    this.leftExpression = leftExpression;
+    this.rightExpression = rightExpression;
+
+    
+  }
+  @Override
+  public int interpret(){
+    return leftExpression.interpret() + rightExpression.interpret();
+  }
+}
+
+//
+public class Produt implements Expression{
+
+  private final Expression leftExpression;
+  private final Expression rightExpression;
+
+  public Product(Expression leftExpression, Expression rightExpression){
+    this.leftExpression = leftExpression;
+    this.rightExpresion = rightExpression;
+  }
+  @Override
+  public int interpret(){
+
+    return leftExpression.interpret() * rightExpression.interpret();
+  }
+}
+//
+public class Substract implement Expression{
+
+  private final Expression leftExpression;
+  private final Expression rightEpression;
+
+  public Substract(Expression leftExpression, Expression rightExpression){
+    this.lefExpression = leftExpression;
+    this.rightExpression = rightExpression;
+  }
+  @Override
+    public int interpret(){
+    return leftExpression.interpret() - rightExpression.interpret();
+    }
+}
+//
+public class Number implements Expression{
+
+  private final int n;
+  public Number(int n){
+    this.n = n;
+  }
+
+  @Overide
+  public int interpret(){
+    return n;
+    
+  }
+}
+//
+public class ExpressionUtils{
+
+  public static boolean isOperator(String s){
+    it(s.equals("+") || s.equals("-") || s.equals("*") )
+      return true;
+    else
+    return false;
+  }
+
+  public static Expression parseExpression(String s, Expression left, Expression right){
+
+    switch(s){
+      case "+":
+        return new Add(left, right);
+
+        case"-":
+        return new Substract(left, right);
+        case"*":
+        return new Product(left, right);
+    }
+    return null;
+    
+    
+  }
+}
+///
+public class TestInterpreterPattern{
+
+  public static void main(String[] args){
+
+    String tokenString  = " 7 3 - 2 1 + *";
+    Stack<Expression> stack = new Stack<>();
+    String[] tokenArray = tokenString.split(" ");
+    for(String s : tokenArray){
+
+      if(ExpressionUtils.isOperator(s){
+        Expression rightExpression = stack.pop();
+        Expreesion leftExpression = stack.pop();
+        Expression operator = ExpressionUtils.getOperator(s,
+                                                         leftExpression,rightExpression);
+
+        int result = operator.interpret();
+        stack.push(new Number(result));
+      }else{
+        Expression i = new Number(Integer.parseInt(s));
+        stack.push(i);
+      }
+    }
+     System.out.println("(" + tokenString + ") = " + stack.pop().interpret());
+  }
+}
+//151 / 173
+//
+
+160
+/
+183
+
+
+  //Decorator Design Pattern
+
+  public interface Pizza
+  {
+
+    public String getDesc();
+    public double getPrice();
+  }
+//
+public class SimplyVegPizza implements Pizza{
+
+  @Override
+  public String getDesc(){
+    return "SimplyVegPizza(230)";
+  }
+  @Override
+  public double getPrice(){
+    return 230.0;
+  }
+  
+}//
+
+public class SimplyNonVegPizza implements Pizza{
+
+  @Override
+  public String getDesc(){
+    return "SimplyNonVegPizza(350)";
+  }
+  @Override
+  public double getPrice(){
+    return 350;
+  }
+}
+//
+public abstract class PizzaDecorator implements Pizza{
+
+  @Override
+
+  public String getDesc(){
+    return " Toppings";
+  }
+}
+//
+public class Broccoli extends PizzaDecorator{
+
+  private final Pizza pizza;
+
+  public Broccoli(Pizza pizza){
+    this.pizza = pizza;
+    
+  }
+  @Override
+  public String getDesc(){
+
+    return pizza.getDesc() + " Broccoli(9.25";
+  }
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 9.25;
+    
+  }
+}
+//
+public class Cheese extends PizzaDecoreator{
+
+  private final Pizza pizza;
+  public Cheese(Pizza pizza){
+    this.pizza = pizza;
+  }
+  
+  @Override
+  public String getDesc(){
+    return pizza.getDesc() + " Cheese(20.72)";
+  }
+
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 20.72;
+  }
+}
+//
+public class extends PizzaDecorator{
+
+  private final Pizza pizza;
+
+  public Chicken(Pizza pizza){
+    this.pizza = pizza;
+  }
+  @Override
+  public String getDesc(){
+    return pizza.getDesc() + " Chicken(12.75)";
+  }
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 12.75;
+  }
+}
+
+//
+public class FetaCheese extends PizzaDecorator{
+
+  private final Pizza pizza;
+
+  public FetaCheese(Pizza pizza){
+    this.pizza = pizza;
+  }
+  @Override
+  public String getDesc(){
+  
+  return pizza.getDesc() + " FetaCheese(25.88)";
+  }
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 25.88;
+  }
+}
+
+//
+public class GreenOlives extends PizzaDecorator{
+
+  private final Pizza pizza;
+  public GreenOlives(Pizza  pizza){
+    this.pizza = pizza;
+  }
+  @Override
+  public String getDesc(){
+    return pizza.getDesc() + " GreenOlives(5.47)";
+  }
+
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 5.47;
+  }
+}
+
+//
+public class Ham extends PizzaDecorator{
+
+  private final Pizza pizza;
+  
+  public Ham(Pizza  pizza){
+    this.pizza = pizza;
+  }
+  @Override
+  public String getDesc(){
+    return pizza.getDesc() + " Ham(18.12)";
+  }
+
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 18.12;
+  }
+}
+//
+public class Meat extends PizzaDecorator{
+
+  private final Pizza pizza;
+
+  public Meat(Pizza  pizza){
+    this.pizza = pizza;
+  }
+  @Override
+  public String getDesc(){
+    return pizza.getDesc() + " Ham(14.25)";
+  }
+
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 14.25;
+  }
+}
+
+//
+public class RedOnion extends PizzaDecorator{
+
+  private final Pizza pizza;
+
+  public RedOnion(Pizza  pizza){
+    this.pizza = pizza;
+  }
+  @Override
+  public String getDesc(){
+    return pizza.getDesc() + " Red Onion(3.75)";
+  }
+
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 3.75;
+  }
+}
+//
+public class RomaTomatos extends PizzaDecorator{
+
+  private final Pizza pizza;
+
+  public RomaTomatos(Pizza  pizza){
+    this.pizza = pizza;
+  }
+  @Override
+  public String getDesc(){
+    return pizza.getDesc() + " Red Tomatos(5.20)";
+  }
+
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 5.20;
+  }
+}
+//
+
+public class Spinach extends PizzaDecorator{
+
+  private final Pizza pizza;
+
+  public Spinach(Pizza  pizza){
+    this.pizza = pizza;
+  }
+  @Override
+  public String getDesc(){
+    return pizza.getDesc() + " Spinach(5.20)";
+  }
+
+  @Override
+  public double getPrice(){
+    return pizza.getPrice() + 5.20;
+  }
+}
+
+//
+public class TestDecoratorPattern{
+
+  public static void main(String[] args){
+
+    DecimalFormat dformat = new DecimalFormat("#.##");
+    Pizza pizza = new SimplyVegPizza();
+
+    pizza = new RomaTomatoes(pizza);
+    pizza = new GreenOlives(pizza);
+    pizza = new Spinach(pizza);
+
+    System.out.println("Desc: " +pizza.getDesc());
+    System.out.println("Price: " + dformat.format(pizza.getPrice())");
+
+    pizza = new SimplyNonVegPizza();
+
+    pizza = new Meat (pizza);
+    pizza = new Chees(pizza);
+    pizza = new Chees(pizza);
+    pizza = new Ham(pizza);
+
+    System.out.println("Desc: " +pizza.getDesc());
+    System.out.println("Price: " + dformat.format(pizza.getPrice()));
+  }
+}
+//
+public class Shape{
+
+  private int id;
+
+  private String name;
+
+  public Shape(int id, String name){
+    this.id =id;
+    this.name = name;
+
+    
+  }
+  public int getId([
+  return id;
+
+}
+
+public void setId(int id  ){
+  this.id = id;
+
+
+}
+
+public String getName(){
+  return name;
+}
+public void setName(String name){
+  this.name = name;
+}
+
+@Override
+  public String toString()
+  {
+  return "ID: " + id + "Shape: " + name;"
+  }
+}
+//
+public class ShapeStorage{
+
+  private Shape [ ] shapes = new Shape[5];
+
+  private int index;
+
+  public void addShape(String name){
+    int i = index++;
+    shapes[i] = new Shape(i, name);
+  }
+  public Shape[] getShapes(){
+    return shapes;
+  }
+}
+//
+public class ShapeItrator implements Iterator<Shape>{
+  private Shape [ ] shapes;
+  int pos;
+
+  public ShapeIterator(Shape [ ] shapes){
+    this.shapes = shapes;
+  }
+  @Override
+  public boolean hasNext(){
+
+    if(pos >= shapes.length || shapes[pos] == null)
+      return false;
+
+    return true;
+  }
+
+  @Override
+  public Shape next(){
+    return shapes[pos++];
+  }
+
+  @Override
+  public void remove(){
+    if(pos <= 0)
+      throw new IllegalStateException("Illegal position");
+  if(shapes[pos-1] != null){
+    for(int i = pos-1; i<shapes.length-1; i++){
+      shapes[i] = shapes[i+1];
+    }
+    shapes[shapes.length-1] = null;
+  }
+  }
+}
+
+
+//
+public class TestIteratorPattern{
+
+  public static void main(String[] args){
+    ShapeStorage storage = new ShapeStorage();
+    storage.addShape("Polygon");
+    storage.addShape("Heptagon");
+    storage.addShape("Circle");
+    storage.addShape("Rectangle");
+  storage.addShape("Square");
+
+
+    ShapeIterator iterator = new ShapeIterator(storage.getShapes());
+    while(iterator.hasNext()){
+      System.out.println(iterator.next());
+    }
+    System.out.println("Apply removing while iterating...");
+    iterator = new ShapeIterator(storage.getShapes());
+    while(iterator.hasNext()){
+      System.out.println(iterator.next());
+      iterator.remove();
+    }
+  }
+}
+//
+public interface Element{
+  public void accept(Visitor visitor);
+}
+
+public interface Visitor{
+
+  public void visit(HtmlElement element);
+  public void visit(HtmlParentElement element);
+
+}
+//
+
+
+public abstract class HtmlTag implements Element{
+
+  public abstract String getTagName();
+public abstract void setStartTag(String Tag);
+public abstract void setEndTag(String Tag);
+  public abstract void setContent(String content);
+  public void setTagBody(String tagBody){
+    throw new UnsupportedOperationExeption("Current operation is not supported for this object");
+  }
+
+  public void addChildTag(HtmlTag htmlTag){
+    throw new UnsupportedOperationExeption("Current operation is not supported for this object");
+  }
+  public void removeChildTag(HtmlTag htmlTag){
+    throw new UnsuportedOperationExeption("Current operation is not supported for this object");
+  }
+  public List<HtmlTag>getChildren(){
+    throw new UnsuportedOperationExeption("Current operation is not supported for this object");
+  }
+  public abstract void generateHtml();
+
+
+}
+//
+public class HtmlElement extends HtmlTag{
+
+  private String tagName;
+  private String startTag;
+  private String endTag;
+  private List<HtmlTag>childrenTag;
+
+  public HtmlParentElement(String tagName){
+    this.tagName = tagName;
+    this.startTag = "";
+    this.endTag = "";
+ this.childrendTag = new ArrayList<>();
+  }
+  @Override
+  public String getTagName(){
+    return tagName;
+  }
+  @Override
+  public void setStartTag(String tag) {
+  this.startTag = tag;
+  }
+  @Override
+  public void setEndTag(String tag) {
+  this.endTag = tag;
+  }
+  @Override
+  public String getStartTag() {
+  return startTag;
+  }
+  @Override
+  public String getEndTag() {
+  return endTag;
+  }
+  @Override
+  public void addChildTag(HtmlTag htmlTag){
+  childrenTag.add(htmlTag);
+  }
+  @Override
+  public void removeChildTag(HtmlTag htmlTag){
+  childrenTag.remove(htmlTag);
+  }
+
+  @Override
+  public List<HtmlTag>getChildren(){
+    return childrenTag;
+  }
+
+  @Override
+  public void generateHtml()[
+  System.out.println(startTag);
+for(HtmlTag tag: childrenTag){
+  tag.generateHtml();
+}
+System.out.println(endTag);
+
+}
+@Override
+  public void accept(Visitor visitor){
+  visitor.visit(this);
+  }
+}
+
+//
+public class HtmlParentElement extends HtmlTag{
+
+
+  private String tagName;
+  private String startTag;
+  private String endTag;
+  private String tagBody;
+
+  public HtmlElement(String tagName){
+    this.tagName = tagName;
+    this.tagBody = "";
+    this.startTag = "";
+    this.endTag = "";
+  }
+  @Override
+  public String getTagName(){
+    return tagName;
+  }
+
+  @Override
+  public void setStartTag(String tag) {
+  this.startTag = tag;
+  }
+  @Override
+  public void setEndTag(String tag) {
+  this.endTag = tag;
+  }
+  @Override
+  public String getStartTag() {
+  return startTag;
+  }
+  @Override
+  public String getEndTag() {
+  return endTag;
+  }
+  @Override
+  public void setTagBody(String tagBody){
+    this.tagBody = tagBody;
+  }
+
+  @Override
+  public void generateHtml(){
+    System.out.println(startTag+"" +tagBody+""+endTag);
+  }
+
+  @Override
+  public void accept(Visitor visitor){
+    visitor.visit(this);
+  }
+}
+//
+public class CssClassVisitor implements Visitor{
+
+  @Override
+  public void visit(HtmlElement element){
+    element.setStartTag(element.getStartTag().replace(">","class='visitor'>")
+                       );
+    
+  }
+
+  @Override
+  public void visit(HtmlParentElement element){
+    parentElement.setStartTag(parentElement.getStartTag().replace(">","class='visitor'>")
+  }
+}
+//
+public class StyleVisitor implements Visitor{
+
+  @Override
+  public void visit(HtmlElement element){
+
+    element.setStartTag(element.getStartTag().replace(">","style='=’width:46px ;'>"){
+      
+    }
+
+    @Override
+      public void visit(HtmlParentElement element){
+      parentElement.setStartTag(parentElement.getStartTag().replace(">","style ←-
+                                                                    =’width:58px;’>"));
+      }
+  }
+//
+public class TestVisitorPattern{
+
+  public static void main(String[] args){
+
+
+    System.out.println("Before visitor....\\n");
+  parentTag.setStartTag("<html");
+    parentTag.setEndTag("</html>");
+
+    HtmlTag p1 = new HtmlParentElement("<body>");
+  p1.setStartTag("<body>");
+    p1.setEndTag("</body>");
+
+    parentTag.addChildTag(p1);
+
+    HtmlTag child1 = new HtmlElement("<P>");
+  child1.setStartTag("<P>");
+    child1.setEndTag("</P>");
+    child1.setTagBody("Testing html tag library"); 
+    p1.addChildTag(child1);
+    
+    child1 = new HtmlElement("<P>");
+    child1.setStartTag("<P>");
+    child1.setEndTag("</P>");
+    child1.setTagBody("Paragragh 2");
+    p1.addCildTag(child1);
+
+    parentTag.generateHtml();
+
+    System.out.println("After visitor....\\n");
+
+    Visitor cssClass = new CssClassVisitor();
+    Visitor Style = new StyleVisitor();
+
+    parentTag = new HtmlParentElement("<html>");
+    parentTag.setStartTag("<html>");
+    parentTag.setEndTag("</html>");
+    parentTag.accept(style);
+    parentTag.accept(cssClass);
+
+
+    p1 = new HtmlParentElement("<body>");
+    p1.setStartTag("<body>");
+    p1.setEndTag("</body>");
+    p1.accept(style);
+    p1.accept(cssClass);
+
+    parentTag.addChildTag(p1);
+
+    child1= new HtmlElement("<P>");
+    child1.setStartTag("<P>");
+  child1.setEndTag("</P>");
+  chil1.accept(style);
+  child1.accept(cssClass);
+
+    p1.addChildTag(child1);
+
+    child1 = new HtmlElement("<P>");
+    child1.setStartTag("<P>");
+  child1.setEndTag("</P>");
+    child1.accept(style);
+    child1.accept(cssClass);
+
+    p1.addCildTag(child1);
+
+    parentTag.generateHtml();
+  }
+}
+//183 End 
